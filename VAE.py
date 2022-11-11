@@ -48,9 +48,6 @@ class Encoder(nn.Module):
         x = self._conv_3(x)
         x = F.relu(x)
 
-        #x = self._conv_4(x)
-        #x = F.relu(x)
-
         x = self._conv_5(x)
         return self._residual_stack(x)
 
@@ -100,9 +97,6 @@ class Decoder(nn.Module):
         x = self._conv_trans_2(x)
         x = F.relu(x)
         
-        #x = self._conv_trans_3(x)
-        #x = F.relu(x)
-
         return self._conv_trans_4(x)
 
 
@@ -154,7 +148,7 @@ class VAE(nn.Module):
             z_shape = z.shape
             flat_z = z.view(z_shape[0], z_shape[1], self._embedding_dim)
 
-            flat_z_quantised = self._hopfield(flat_z)#flat_z)
+            flat_z_quantised = self._hopfield(flat_z)
 
             z_quantised = flat_z_quantised.view(z_shape)
 
