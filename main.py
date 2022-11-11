@@ -5,6 +5,7 @@ import torch.optim as optim
 from torch.utils.data import random_split
 
 import argparse
+import dill
 
 import numpy as np
 
@@ -180,11 +181,12 @@ def main():
     wandb.watch(model, log="all")
 
     for epoch in range(config.epochs):
+
         train(model, train_loader, optimiser)
         test(model, test_loader)
 
         if not epoch % 5:
-            torch.save(model, "VAE-{config.batch_size}.pth")
+            torch.save(model, f'outputs/VAE-{config.batch_size}.pth', pickle_module=dill)
 
 if __name__ == '__main__':
     main()
