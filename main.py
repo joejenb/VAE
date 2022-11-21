@@ -36,7 +36,7 @@ import os
 import torchvision
 from torchvision import transforms
 
-from VAE import VAE
+from VAE import VAE, NewVAE
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--data", type=str)
@@ -66,6 +66,7 @@ config.num_filters = 64
 config.embedding_dim = config.num_filters
 config.num_channels = 3
 config.data_set = "FFHQ"
+config.representation_dim = 8
 
 def get_data_loaders():
     if config.data_set == "MNIST":
@@ -173,9 +174,13 @@ def main():
     device = torch.device("cuda" if use_cuda else "cpu")
 
     train_loader, val_loader, test_loader, num_classes = get_data_loaders()
+    checkpoint_location = f'outputs/VAE-{config.batch_size}.pth'
 
     ### Add in correct parameters
-    model = VAE(config, device).to(device)
+    model = NewVAE(config, device).to(device)
+    if os.exists(checkpoint_location):
+        model.load_state_dict(torch.load(checkpoint_location))
+    print(model._representation_dim)
     optimiser = optim.Adam(model.parameters(), lr=config.learning_rate, amsgrad=False)
 
     wandb.watch(model, log="all")
@@ -186,7 +191,7 @@ def main():
         test(model, test_loader)
 
         if not epoch % 5:
-            torch.save(model, f'outputs/VAE-{config.batch_size}.pth', pickle_module=dill)
+            torch.save(model, checkpoint_location, pickle_module=dill)
 
 if __name__ == '__main__':
     main()

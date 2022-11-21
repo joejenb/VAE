@@ -99,7 +99,6 @@ class Decoder(nn.Module):
         
         return self._conv_trans_4(x)
 
-
 class VAE(nn.Module):
     def __init__(self, config, device):
         super(VAE, self).__init__()
@@ -134,6 +133,87 @@ class VAE(nn.Module):
         eps = torch.randn_like(std)
         return eps * std + mu
 
+    def interpolate(self, x, y):
+        if (x.size() == y.size()):
+            zx = self._encoder(x)
+            zx = self._pre_sample(zx)
+
+            zy = self._encoder(y)
+            zy = self._pre_sample(zy)
+
+            z = (zx + zy) / 2
+
+            z_shape = z.shape
+            flat_z = z.view(z_shape[0], z_shape[1], self._embedding_dim)
+
+            flat_z_quantised = self._hopfield(flat_z)
+
+            z_quantised = flat_z_quantised.view(z_shape)
+
+            xy_recon = self._decoder(z_quantised)
+
+            return xy_recon
+        return x
+
+    def forward(self, x):
+        z = self._encoder(x)
+        z = F.relu(self._pre_sample(z))
+
+        z_shape = z.shape
+
+        flat_z = z.view(z_shape[0], -1)
+
+        mu = self.mu(flat_z)
+        log_var = self.log_var(flat_z)
+        z_sampled = self.reparameterize(mu, log_var)
+
+        flat_z_sampled = self.pre_decode(z_sampled)
+
+        z_sampled = flat_z_sampled.view(z_shape)
+
+        x_recon = self._decoder(z_sampled)
+
+        return x_recon, mu, log_var
+
+class NewVAE(nn.Module):
+    def __init__(self, config, device):
+        super(VAE, self).__init__()
+
+        self.device = device
+
+        self._embedding_dim = config.embedding_dim
+        self._representation_dim = config.representation_dim
+
+        self._encoder = Encoder(config.num_channels, config.num_hiddens,
+                                config.num_residual_layers, 
+                                config.num_residual_hiddens)
+
+        self._pre_sample = nn.Conv2d(in_channels=config.num_hiddens, 
+                                      out_channels=config.num_filters,
+                                      kernel_size=1, 
+                                      stride=1)
+
+        self.mu = nn.Linear(config.embedding_dim * 64, config.embedding_dim * 2)
+        self.log_var = nn.Linear(config.embedding_dim * 64, config.embedding_dim * 2)
+
+        self.pre_decode = nn.Linear(config.embedding_dim * 2, config.embedding_dim * 64)
+
+        self._decoder = Decoder(config.num_filters,
+                            config.num_channels,
+                            config.num_hiddens, 
+                            config.num_residual_layers, 
+                            config.num_residual_hiddens
+                        )
+
+    def reparameterize(self, mu, log_var):
+        std = torch.exp(0.5 * log_var)
+        eps = torch.randn_like(std)
+        return eps * std + mu
+
+    def sample(self):
+        z = torch.randn(1, self._embedding_dim, self._representation_dim, self._representation_dim)
+        z = z.to(self.device)
+        return self._decoder(z)
 
     def interpolate(self, x, y):
         if (x.size() == y.size()):
