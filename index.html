@@ -43,7 +43,11 @@
                     While effective with respect to compression such models do not guarantee known structure in the latent space. This makes its traversal unpredictable. Variational Autoencoders [3], on 
                     the other hand, impose a prior distribution \(p(z)\) over the latent space. This is usually defined as \(z ∼ N(0,I)\)[4]. The encoder then approximates the posterior distribution \(p(z|x)\) while 
                     the decoder approximates the likelihood \(p(x|z)\). This imposition of p(z) regularises the latent space, facilitating controlled sampling. Optimisation requires maximising the likelihood 
-                    (minimising reconstruction error), and minimising the divergence of the approximated posterior from the true posterior (the regularisation error). This gives the loss function:
+                    (minimising reconstruction error), and minimising the divergence of the approximated posterior from the true posterior (the regularisation error). This gives the loss function
+
+                </p>
+                <p>
+                    
 
                     -   Why is the likelkihood the reconstruction error?
                     -   What are you sampling from is it not p(z|x)? i.e mu and var parameterise p(z|x) -> predefine the structure of your prior to be p(z) = N -> then using kl-divergence pull the posterior towards this?
@@ -60,18 +64,37 @@
 
                     \(D_{KL}(q_{\lambda}(z|x) || p(z|x)) = \int q_{\lambda}(z|x) log \frac{p(z|x)}{q_{\lambda}(z|x)} \,dz \) <br>
                                                            \(\vdots\)<br>
-                                                           \(= E_{q}[log q_{\lambda} (z | x)] - E_{q}[log p(x, z)] + log p(x)\) <br>
-                                                           \(= E)
+                                                           \(= E_{q_{\lambda}(z|x)}[log q_{\lambda} (z | x)] - E_{q_{\lambda}(z|x)}[log p(x, z)] + log p(x)\) <br>
+                                                           \(= log p(x) - ELBO(\lambda)\)
                 </p>
                 <p>
                     Hence to learn an accurate approximation of the posterior we look to minimise \(D_{KL}(q_{\lambda}(z|x) || p(z|x))\). However, achieving this is more difficult than it first seems due to \(p(x) = \int p(x|z) p(z) \,dz \) - given in the above - being intractable
-                    to compute in many instances. To overcome this, we make use of the fact that KL Divergence is by definition always greater than or equal to 0. Therefore, the problem can be reformulated as a maxmisation of Evidence Lower Bound (ELBO), an objective that by
-                    consequence must also minimise KL Divergence. 
-
+                    to compute in many instances. To overcome this, we make use of the fact that KL Divergence is always greater than or equal to 0. Therefore, the problem can be reformulated as a maxmisation of the Evidence Lower Bound (ELBO), by
+                    consequence minimising KL Divergence. Specifically we maximise the objective \(E_{q_{\lambda}(z|x)}[log p(x|z)] - D_{KL}(q_{\lambda}(z|x) || p(z))\) where
+                </p>
+                <p class="eq">
+                    \(ELBO(\lambda) = E_{q_{\lambda}(z|x)}[log p(x, z)] - E_{q_{\lambda}(z|x)}[log q_{\lambda} (z | x)]\)<br>
+                    \(= E_{q_{\lambda}(z|x)}[log p(x|z) + log p(z)] - E_{q_{\lambda}(z|x)}[log q_{lambda}(z | x)\)<br>
+                    \(= E_{q_{\lambda}(z|x)}[log p(x|z)] + E_{q_{\lambda}(z|x)}[log p(z)] - E_{q_{\lambda}(z|x)}[log q_{lambda}(z | x)\)<br>
+                    \(= E_{q_{\lambda}(z|x)}[log p(x|z)] + E_{q_{\lambda}(z|x)}[log \frac{p(z)}{q_{\lambda}(z|x)}]\)<br>
+                    \(= E_{q_{\lambda}(z|x)}[log p(x|z)] - D_{KL}(q_{\lambda}(z|x) || p(z))\)<br>
+                </p>
+                <p>
+                    In addition to this all latent variables \(z\) are unique to a given datapoint \(x_{i}\). As a result, maximisation of \(ELBO(\lambda)\)
+                    is equivalent to the maximisation of \(ELBO_{i}(\lambda)\) over all \(i\) giving
+                    
+                </p> 
+                <p class="eq">
+                    \(ELBO_{i}(\lambda) = E_{q_{\lambda}(z|x_{i})}[log p(x_{i}|z)] - D_{KL}(q_{\lambda}(z|x_{i}) || p(z))\)<br>
+                </p>
+                <p>
+                    However, for such an objective to be effective when paired with Stochastic Gradient Descent (SGD) over training examples, 
+                    it is required that amortised variational inference is used. That is to say that the set of parameters \(\lambda\) are shared
+                    accross datapoints. 
+                </p>
                     --Instead maximise this -> given that all latent variables uniquely correspond to datapoints, can write elbo in specific may and maximise it using sgd -> KL divergence is always greater than 0 and p(X) is fixed so doing this minimises the KL
                     divergence as desired -> under the assumption that we impose a gaussian prior, maximising log likelkihood is minimising mse -> also then know the structure of z hence can easily minimise kl between this and approximate posterior
                     -> talk about reparameterisation trick
-                </p>
             </div>
     </body>
 </html>
