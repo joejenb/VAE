@@ -1,0 +1,77 @@
+<!doctype html>
+
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <title>Face Generator</title>
+        <meta name="description" content="A simple HTML5 Template for new projects.">
+        <meta name="Joseph Jenner-Bailey" content="">
+
+        <meta property="og:title" content="Face Generator">
+        <meta property="og:type" content="website">
+        <meta property="og:description" content="Generate and interpolate between faces">
+      
+        <!-- Mobile Specific Metas
+        –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+      
+        <!-- FONT
+        –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+        <link href="//fonts.googleapis.com/css?family=Raleway:400,300,600" rel="stylesheet" type="text/css">
+      
+        <!-- CSS
+        –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+        <link rel="stylesheet" type="text/css" href="styles/skeleton.css">
+        <link rel="stylesheet" type="text/css" href="styles/normalize.css">
+        <link rel= "stylesheet" type= "text/css" href= "styles/style.css">
+
+        <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+        <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    </head>
+
+    <body>
+        <!-- your content here... -->
+        <div class="container horizontal-center vertical-center">
+            <!-- columns should be the immediate child of a .row -->
+            <div class="row">
+                <h2>Variational Autoencoders</h2>
+                <h1>Overview</h1>
+                <p>
+                    Traditional Autoencoders take an input \(x ∼ p(X)\), feed this into to an encoder to get a compressed latent representation z and then build a reconstruction \(\hat{x} ≈ x\) with use of a decoder. 
+                    While effective with respect to compression such models do not guarantee known structure in the latent space. This makes its traversal unpredictable. Variational Autoencoders [3], on 
+                    the other hand, impose a prior distribution \(p(z)\) over the latent space. This is usually defined as \(z ∼ N(0,I)\)[4]. The encoder then approximates the posterior distribution \(p(z|x)\) while 
+                    the decoder approximates the likelihood \(p(x|z)\). This imposition of p(z) regularises the latent space, facilitating controlled sampling. Optimisation requires maximising the likelihood 
+                    (minimising reconstruction error), and minimising the divergence of the approximated posterior from the true posterior (the regularisation error). This gives the loss function:
+
+                    -   Why is the likelkihood the reconstruction error?
+                    -   What are you sampling from is it not p(z|x)? i.e mu and var parameterise p(z|x) -> predefine the structure of your prior to be p(z) = N -> then using kl-divergence pull the posterior towards this?
+                    -   How do you correctly define that x is the output/sample? of a random variable distributed according to p(X)?
+                </p>
+                <h1>Method</h1>
+                <p>
+                    Treating the encoder as an approximation \(q_{\lambda}(z|x)\) of the posterior distribution and the decoder as an approxiamtion \(p_{\theta}(x|z)\), we wish to minimise 
+                    To approximate \(p(z|x)\) through an enocder \(q_{\lambda}(z|x)\) it is required that we minimise the 
+                    In the case that \(q_{\lambda}(z|x)\) - the encoder under a specific parameterisation \(\lambda\) - is an accurate approximation of the posterior \(p(z|x)\), then there will be little divergence \(D\) between the two distributions. 
+                    To quanitify this, KL Divergence given by \(D_{KL}(q_{\lambda}(z|x) || p(z|x))\) is commonly used, where
+                </p>
+                <p class="eq">
+
+                    \(D_{KL}(q_{\lambda}(z|x) || p(z|x)) = \int q_{\lambda}(z|x) log \frac{p(z|x)}{q_{\lambda}(z|x)} \,dz \) <br>
+                                                           \(\vdots\)<br>
+                                                           \(= E_{q}[log q_{\lambda} (z | x)] - E_{q}[log p(x, z)] + log p(x)\) <br>
+                                                           \(= E)
+                </p>
+                <p>
+                    Hence to learn an accurate approximation of the posterior we look to minimise \(D_{KL}(q_{\lambda}(z|x) || p(z|x))\). However, achieving this is more difficult than it first seems due to \(p(x) = \int p(x|z) p(z) \,dz \) - given in the above - being intractable
+                    to compute in many instances. To overcome this, we make use of the fact that KL Divergence is by definition always greater than or equal to 0. Therefore, the problem can be reformulated as a maxmisation of Evidence Lower Bound (ELBO), an objective that by
+                    consequence must also minimise KL Divergence. 
+
+                    --Instead maximise this -> given that all latent variables uniquely correspond to datapoints, can write elbo in specific may and maximise it using sgd -> KL divergence is always greater than 0 and p(X) is fixed so doing this minimises the KL
+                    divergence as desired -> under the assumption that we impose a gaussian prior, maximising log likelkihood is minimising mse -> also then know the structure of z hence can easily minimise kl between this and approximate posterior
+                    -> talk about reparameterisation trick
+                </p>
+            </div>
+    </body>
+</html>
