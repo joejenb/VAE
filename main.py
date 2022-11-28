@@ -12,31 +12,10 @@ import numpy as np
 import wandb
 import os
 
-'''
--   Use azure ml to import dataset
--   Can sue sdk to set environment, dataset and experiment -> nope must use yml to sepcify env and experiment
--> others can only be specified in run submit i.e to push code
-
--   Save whole model at the end -> done
--   Make sure using train and eval -> done
--   Look at how you can repeat jobs in vs code -> done
-
--   Look at Azure subscriptions, multiple GPUs
--   Look at horovod
-
--   Need to train and evaluate VQ-VAE with interpolation
--   Need to train and evaluate HOP-VAE with interpolation
--   Need to train and evaluate HOP-VAE with transformed representations and interpolation
--   Need to train and evaluate HOP-VAE with transformed representations and joint distribution and interpolation
--   Need to train and evaluate HOP-VAE with transformed representations and joint distribution and quantisation of interpolations
-
--   Do first 3 and then email
-'''
-
 import torchvision
 from torchvision import transforms
 
-from VAE import VAE, NewVAE
+from VAE import VAE
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--data", type=str)
@@ -177,10 +156,10 @@ def main():
     checkpoint_location = f'outputs/VAE-{config.batch_size}.pth'
 
     ### Add in correct parameters
-    model = NewVAE(config, device).to(device)
+    model = VAE(config, device).to(device)
     if os.exists(checkpoint_location):
         model.load_state_dict(torch.load(checkpoint_location))
-    print(model._representation_dim)
+
     optimiser = optim.Adam(model.parameters(), lr=config.learning_rate, amsgrad=False)
 
     wandb.watch(model, log="all")
