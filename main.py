@@ -14,6 +14,8 @@ import os
 import torchvision
 from torchvision import transforms
 
+import wandb
+
 from VAE import VAE
 from configs.ffhq_64_config import config
 
@@ -23,6 +25,10 @@ parser.add_argument("--data", type=str)
 args = parser.parse_args()
 PATH = args.data 
 
+wandb.init(project="VAE", config=config)
+wandb.watch_called = False # Re-run the model without restarting the runtime, unnecessary after our next release
+
+config = wandb.config          # Initialize config
 
 def get_data_loaders():
     if config.data_set == "MNIST":
