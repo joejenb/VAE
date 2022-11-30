@@ -153,7 +153,7 @@ class VAE(nn.Module):
 
             flat_z = (flat_zx + flat_zy) / 2
             log_var = self.log_var(flat_z)
-            z_sampled = self.reparameterize(mu, log_var)
+            flat_z_sampled = self.reparameterize(mu, log_var)
 
             #flat_z_quantised = self._hopfield(flat_z)
 
