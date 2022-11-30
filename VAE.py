@@ -111,7 +111,7 @@ class VAE(nn.Module):
         self.mu = nn.Linear(config.embedding_dim * config.representation_dim ** 2, config.latent_dim)
         self.log_var = nn.Linear(config.embedding_dim * config.representation_dim ** 2, config.latent_dim)
 
-        self.pre_decode = nn.Linear(config.latent_dim, config.embedding_dim * config.representation_dim ** 2)
+        self.pre_decode = nn.Linear(config.latent_dim, config.embedding_dim * (2 * config.representation_dim) ** 2)
 
         self._decoder = Decoder(config.num_filters,
                             config.num_channels,
