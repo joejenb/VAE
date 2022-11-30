@@ -137,7 +137,7 @@ def main():
     device = torch.device("cuda" if use_cuda else "cpu")
 
     train_loader, val_loader, test_loader, num_classes = get_data_loaders()
-    checkpoint_location = f'outputs/{config.dataset}-{config.batch_size}.pth'
+    checkpoint_location = f'outputs/{config.data_set}-{config.batch_size}.pth'
 
     ### Add in correct parameters
     model = VAE(config, device).to(device)
