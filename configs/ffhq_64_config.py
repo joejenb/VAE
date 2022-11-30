@@ -1,7 +1,7 @@
 config = {}
 config["batch_size"] = 64          # input batch size for training (default: 64)
 config["epochs"] = 100             # number of epochs to train (default: 10)
-config["no_cud"]a = False         # disables CUDA training
+config["no_cuda"] = False         # disables CUDA training
 config["seed"] = 42               # random seed (default: 42)
 config["image_size"] = 64
 config["log_interval"] = 1     # how many batches to wait before logging training status
