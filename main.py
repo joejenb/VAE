@@ -77,7 +77,7 @@ def get_data_loaders():
     return train_loader, val_loader, test_loader, num_classes
 
 
-def train(model, train_loader, optimiser):
+def train(model, train_loader, optimiser, scheduler):
 
     model.train()
     train_res_recon_error = 0
@@ -94,6 +94,7 @@ def train(model, train_loader, optimiser):
 
         loss.backward()
         optimiser.step()
+        scheduler.step()
         
         train_res_recon_error += recon_error.item()
 
@@ -136,24 +137,25 @@ def main():
     device = torch.device("cuda" if use_cuda else "cpu")
 
     train_loader, val_loader, test_loader, num_classes = get_data_loaders()
-    checkpoint_location = f'outputs/VAE-{config.batch_size}.pth'
+    checkpoint_location = f'outputs/{config.dataset}-{config.batch_size}.pth'
 
     ### Add in correct parameters
     model = VAE(config, device).to(device)
-    if os.exists(checkpoint_location):
-        model.load_state_dict(torch.load(checkpoint_location))
+    #if os.exists(checkpoint_location):
+    #    model.load_state_dict(torch.load(checkpoint_location))
 
-    optimiser = optim.Adam(model.parameters(), lr=config.learning_rate, amsgrad=False)
+    optimiser = optim.Adam(model.parameters(), lr=config.learning_rate, weight_decay=config.weight_decay)
+    scheduler = optim.lr_scheduler.ExponentialLR(optimiser, gamma=config.gamma)
 
     wandb.watch(model, log="all")
 
     for epoch in range(config.epochs):
 
-        train(model, train_loader, optimiser)
+        train(model, train_loader, optimiser, scheduler)
         test(model, test_loader)
 
         if not epoch % 5:
-            torch.save(model, checkpoint_location, pickle_module=dill)
+            torch.save(model.state_dict(), checkpoint_location)
 
 if __name__ == '__main__':
     main()

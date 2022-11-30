@@ -25,11 +25,6 @@ class Encoder(nn.Module):
 
         self._conv_4 = nn.Conv2d(in_channels=num_hiddens,
                                  out_channels=num_hiddens,
-                                 kernel_size=4,
-                                 stride=2, padding=1)
-
-        self._conv_5 = nn.Conv2d(in_channels=num_hiddens,
-                                 out_channels=num_hiddens,
                                  kernel_size=3,
                                  stride=1, padding=1)
 
@@ -40,15 +35,16 @@ class Encoder(nn.Module):
 
     def forward(self, inputs):
         x = self._conv_1(inputs)
-        x = F.relu(x)
+        x = F.gelu(x)
         
         x = self._conv_2(x)
-        x = F.relu(x)
+        x = F.gelu(x)
         
         x = self._conv_3(x)
-        x = F.relu(x)
+        x = F.gelu(x)
 
-        x = self._conv_5(x)
+        x = self._conv_4(x)
+        #Should have 2048 units -> embedding_dim * repres_dim^2
         return self._residual_stack(x)
 
 
@@ -77,11 +73,6 @@ class Decoder(nn.Module):
                                                 stride=2, padding=1)
 
         self._conv_trans_3 = nn.ConvTranspose2d(in_channels=num_hiddens//2, 
-                                                out_channels=num_hiddens//2,
-                                                kernel_size=4, 
-                                                stride=2, padding=1)
-       
-        self._conv_trans_4 = nn.ConvTranspose2d(in_channels=num_hiddens//2, 
                                                 out_channels=out_channels,
                                                 kernel_size=4, 
                                                 stride=2, padding=1)
@@ -92,12 +83,12 @@ class Decoder(nn.Module):
         x = self._residual_stack(x)
         
         x = self._conv_trans_1(x)
-        x = F.relu(x)
+        x = F.gelu(x)
 
         x = self._conv_trans_2(x)
-        x = F.relu(x)
+        x = F.gelu(x)
         
-        return self._conv_trans_4(x)
+        return self._conv_trans_3(x)
 
 class VAE(nn.Module):
     def __init__(self, config, device):
@@ -117,10 +108,10 @@ class VAE(nn.Module):
                                       kernel_size=1, 
                                       stride=1)
 
-        self.mu = nn.Linear(config.embedding_dim * 64, config.embedding_dim * 2)
-        self.log_var = nn.Linear(config.embedding_dim * 64, config.embedding_dim * 2)
+        self.mu = nn.Linear(config.embedding_dim * config.representation_dim ** 2, config.latent_dim)
+        self.log_var = nn.Linear(config.embedding_dim * config.representation_dim ** 2, config.latent_dim)
 
-        self.pre_decode = nn.Linear(config.embedding_dim * 2, config.embedding_dim * 64)
+        self.pre_decode = nn.Linear(config.latent_dim, config.embedding_dim * config.representation_dim ** 2)
 
         self._decoder = Decoder(config.num_filters,
                             config.num_channels,
@@ -167,7 +158,7 @@ class VAE(nn.Module):
 
     def forward(self, x):
         z = self._encoder(x)
-        z = F.relu(self._pre_sample(z))
+        z = F.gelu(self._pre_sample(z))
 
         z_shape = z.shape
 
