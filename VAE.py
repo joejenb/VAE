@@ -152,6 +152,7 @@ class VAE(nn.Module):
             flat_zx = zx.view(z_shape[0], z_shape[1], self._embedding_dim)
 
             flat_z = (flat_zx + flat_zy) / 2
+            mu = self.mu(flat_z)
             log_var = self.log_var(flat_z)
             flat_z_sampled = self.reparameterize(mu, log_var)
 
