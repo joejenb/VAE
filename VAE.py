@@ -168,7 +168,7 @@ class VAE(nn.Module):
         log_var = self.log_var(flat_z)
 
         flat_z_sampled = self.reparameterize(mu, log_var)
-        flat_z_sampled = self.pre_decode(z_sampled)
+        flat_z_sampled = self.pre_decode(flat_z_sampled)
 
         z_sampled = flat_z_sampled.view(z_shape)
 
