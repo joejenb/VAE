@@ -15,6 +15,7 @@ config["num_hiddens"] = 512
 config["num_residual_layers"] = 3
 config["num_residual_hiddens"] = 32
 config["num_filters"] = 32
+config["embedding_dim"] = 32
 config["latent_dim"] = 128
 config["num_channels"] = 3
 config["data_set"] = "FFHQ"
