@@ -148,8 +148,8 @@ class VAE(nn.Module):
             zy = self._pre_sample(zy)
 
             z_shape = zy.shape
-            flat_zy = zy.view(z_shape[0], z_shape[1], self._embedding_dim)
-            flat_zx = zx.view(z_shape[0], z_shape[1], self._embedding_dim)
+            flat_zy = zy.view(z_shape[0], -1)
+            flat_zx = zx.view(z_shape[0], -1)
 
             flat_z = (flat_zx + flat_zy) / 2
             mu = self.mu(flat_z)
