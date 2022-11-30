@@ -147,16 +147,19 @@ class VAE(nn.Module):
             zy = self._encoder(y)
             zy = self._pre_sample(zy)
 
-            z = (zx + zy) / 2
+            z_shape = zy.shape
+            flat_zy = zy.view(z_shape[0], z_shape[1], self._embedding_dim)
+            flat_zx = zx.view(z_shape[0], z_shape[1], self._embedding_dim)
 
-            z_shape = z.shape
-            flat_z = z.view(z_shape[0], z_shape[1], self._embedding_dim)
+            flat_z = (flat_zx + flat_zy) / 2
+            log_var = self.log_var(flat_z)
+            z_sampled = self.reparameterize(mu, log_var)
 
-            flat_z_quantised = self._hopfield(flat_z)
+            #flat_z_quantised = self._hopfield(flat_z)
 
-            z_quantised = flat_z_quantised.view(z_shape)
+            z_sampled = flat_z_sampled.view(z_shape)
 
-            xy_recon = self._decoder(z_quantised)
+            xy_recon = self._decoder(z_sampled)
 
             return xy_recon
         return x
