@@ -126,9 +126,22 @@ class VAE(nn.Module):
         return eps * std + mu
 
     def sample(self):
-        z = torch.randn(1, self._embedding_dim, self._representation_dim, self._representation_dim)
-        z = z.to(self.device)
-        return self._decoder(z)
+        z = F.gelu(torch.randn(1, self._embedding_dim, self._representation_dim, self._representation_dim))
+        z_shape = z.shape
+
+        flat_z = z.view(z_shape[0], -1)
+
+        mu = self.mu(flat_z)
+        log_var = self.log_var(flat_z)
+
+        flat_z_sampled = self.reparameterize(mu, log_var)
+        flat_z_sampled = self.pre_decode(flat_z_sampled)
+
+        z_sampled = flat_z_sampled.view(z_shape[0], z_shape[1], self._representation_dim, self._representation_dim)
+
+        x_sample = self._decoder(z_sampled)
+
+        return x_sample
 
     def interpolate(self, x, y):
         if (x.size() == y.size()):
