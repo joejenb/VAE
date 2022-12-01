@@ -94,7 +94,7 @@ def train(model, train_loader, optimiser, scheduler):
 
         loss.backward()
         optimiser.step()
-        #scheduler.step()
+        scheduler.step()
         
         train_res_recon_error += recon_error.item()
 

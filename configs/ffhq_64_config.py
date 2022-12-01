@@ -8,7 +8,7 @@ config["log_interval"] = 1     # how many batches to wait before logging trainin
 config["learning_rate"] = 1e-3
 config["kld_weight"] = 0.00025
 config["momentum"] = 0.1
-config["gamma"] = 0.95
+config["gamma"] = 0.99
 config["weight_decay"] = 0.0
 
 config["num_hiddens"] = 128
