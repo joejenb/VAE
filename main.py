@@ -155,7 +155,7 @@ def main():
     ### Add in correct parameters
     model = VAE(config, device).to(device)
     if os.path.exists(checkpoint_location):
-        model.load_state_dict(torch.load(checkpoint_location))
+        model.load_state_dict(torch.load(checkpoint_location, map_location=device))
 
     optimiser = optim.Adam(model.parameters(), lr=config.learning_rate)#, weight_decay=config.weight_decay)
     scheduler = optim.lr_scheduler.ExponentialLR(optimiser, gamma=config.gamma)
