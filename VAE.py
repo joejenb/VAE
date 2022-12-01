@@ -25,8 +25,8 @@ class Encoder(nn.Module):
 
         self._conv_4 = nn.Conv2d(in_channels=num_hiddens,
                                  out_channels=num_hiddens,
-                                 kernel_size=4,
-                                 stride=2, padding=1)
+                                 kernel_size=3,
+                                 stride=1, padding=1)
 
         self._residual_stack = ResidualStack(in_channels=num_hiddens,
                                              num_hiddens=num_hiddens,
@@ -111,7 +111,7 @@ class VAE(nn.Module):
         self.mu = nn.Linear(config.embedding_dim * config.representation_dim ** 2, config.latent_dim)
         self.log_var = nn.Linear(config.embedding_dim * config.representation_dim ** 2, config.latent_dim)
 
-        self.pre_decode = nn.Linear(config.latent_dim, config.embedding_dim * (2 * config.representation_dim) ** 2)
+        self.pre_decode = nn.Linear(config.latent_dim, config.embedding_dim * config.representation_dim ** 2)
 
         self._decoder = Decoder(config.num_filters,
                             config.num_channels,
