@@ -97,6 +97,7 @@ class VAE(nn.Module):
         self.device = device
 
         self._embedding_dim = config.embedding_dim
+        self._latent_dim = config.latent_dim
         self._representation_dim = config.representation_dim
 
         self._encoder = Encoder(config.num_channels, config.num_hiddens,
@@ -126,18 +127,13 @@ class VAE(nn.Module):
         return eps * std + mu
 
     def sample(self):
-        z = F.gelu(torch.randn(1, self._embedding_dim, self._representation_dim, self._representation_dim))
-        z_shape = z.shape
-
-        flat_z = z.view(z_shape[0], -1)
-
-        mu = self.mu(flat_z)
-        log_var = self.log_var(flat_z)
+        mu = torch.randn(1, self._latent_dim)
+        log_var = torch.randn(1, self._latent_dim)
 
         flat_z_sampled = self.reparameterize(mu, log_var)
         flat_z_sampled = self.pre_decode(flat_z_sampled)
 
-        z_sampled = flat_z_sampled.view(z_shape[0], z_shape[1], self._representation_dim, self._representation_dim)
+        z_sampled = flat_z_sampled.view(1, self._embedding_dim, self._representation_dim, self._representation_dim)
 
         x_sample = self._decoder(z_sampled)
 
