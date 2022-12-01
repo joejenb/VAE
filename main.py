@@ -94,7 +94,7 @@ def train(model, train_loader, optimiser, scheduler):
 
         loss.backward()
         optimiser.step()
-        scheduler.step()
+        #scheduler.step()
         
         train_res_recon_error += recon_error.item()
 
@@ -144,7 +144,7 @@ def main():
     if os.path.exists(checkpoint_location):
         model.load_state_dict(torch.load(checkpoint_location))
 
-    optimiser = optim.Adam(model.parameters(), lr=config.learning_rate, weight_decay=config.weight_decay)
+    optimiser = optim.Adam(model.parameters(), lr=config.learning_rate)#, weight_decay=config.weight_decay)
     scheduler = optim.lr_scheduler.ExponentialLR(optimiser, gamma=config.gamma)
 
     wandb.watch(model, log="all")
