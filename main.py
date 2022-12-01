@@ -150,7 +150,8 @@ def main():
     device = torch.device("cuda" if use_cuda else "cpu")
 
     train_loader, val_loader, test_loader, num_classes = get_data_loaders()
-    checkpoint_location = f'outputs/{config.data_set}-{config.image_size}.ckpt'
+    checkpoint_location = f'checkpoints/{config.data_set}-{config.image_size}.ckpt'
+    output_location = f'outputs/{config.data_set}-{config.image_size}.ckpt'
 
     ### Add in correct parameters
     model = VAE(config, device).to(device)
@@ -167,8 +168,8 @@ def main():
         #train(model, train_loader, optimiser, scheduler)
         test(model, test_loader)
 
-        #if not epoch % 5:
-        #    torch.save(model.state_dict(), checkpoint_location)
+        if not epoch % 5:
+            torch.save(model.state_dict(), output_location)
 
 if __name__ == '__main__':
     main()

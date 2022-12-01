@@ -9,14 +9,14 @@ experiment_name: VAE
 command: python main.py --data ${{inputs.FFHQ}}
 
 # invoke completions (Ctrl+Space, Cmd+Space) to see the list of environments available
-environment: 'azureml:Deep_Learning111:1'
+environment: azureml:DeepLearning-1-11:1
 
 # invoke completions (Ctrl+Space, Cmd+Space) to see the list of computes available
-compute: azureml:ModelTraining
+compute: azureml:ModelTesting
 
 # This defines the input data to mount. The names of the items in inputs can be referenced in the command
 inputs:
   FFHQ:
     type: uri_folder
     mode: ro_mount
-    path: azureml:FFHQ-DATASET:1
+    path: azureml:FFHQ:1
