@@ -126,7 +126,7 @@ class VAE(nn.Module):
         return eps * std + mu
 
     def sample(self):
-        z = F.gelu(torch.randn(1, self._embedding_dim, self._representation_dim, self._representation_dim))
+        z = torch.randn(1, self._embedding_dim, self._representation_dim, self._representation_dim)
         z = z.to(self.device)
         return self._decoder(z)
 
