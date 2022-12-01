@@ -35,13 +35,13 @@ class Encoder(nn.Module):
 
     def forward(self, inputs):
         x = self._conv_1(inputs)
-        x = F.relu(x)
+        x = F.gelu(x)
         
         x = self._conv_2(x)
-        x = F.relu(x)
+        x = F.gelu(x)
         
         x = self._conv_3(x)
-        x = F.relu(x)
+        x = F.gelu(x)
 
         x = self._conv_4(x)
         #Should have 2048 units -> embedding_dim * repres_dim^2
@@ -83,10 +83,10 @@ class Decoder(nn.Module):
         x = self._residual_stack(x)
         
         x = self._conv_trans_1(x)
-        x = F.relu(x)
+        x = F.gelu(x)
 
         x = self._conv_trans_2(x)
-        x = F.relu(x)
+        x = F.gelu(x)
         
         return self._conv_trans_3(x)
 
@@ -158,7 +158,7 @@ class VAE(nn.Module):
 
     def forward(self, x):
         z = self._encoder(x)
-        z = F.relu(self._pre_sample(z))
+        z = F.gelu(self._pre_sample(z))
 
         z_shape = z.shape
 
