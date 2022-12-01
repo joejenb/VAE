@@ -94,10 +94,10 @@ def train(model, train_loader, optimiser, scheduler):
 
         loss.backward()
         optimiser.step()
-        scheduler.step()
         
         train_res_recon_error += recon_error.item()
 
+    scheduler.step()
     wandb.log({
         "Train Reconstruction Error": train_res_recon_error / len(train_loader.dataset)
     })
