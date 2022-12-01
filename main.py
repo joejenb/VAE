@@ -109,8 +109,13 @@ def test(model, test_loader):
 
     test_res_recon_error = 0
 
-    example_images = []
-    example_reconstructions = []
+    # Last batch is of different size so simplest to do like this
+    iterator = iter(test_loader)
+    Y, _ = next(iterator)
+    Y = Y.to(model.device)
+
+    Z, _ = next(iterator)
+    Z = Z.to(model.device)
 
     with torch.no_grad():
         for X, _ in test_loader:
@@ -121,12 +126,20 @@ def test(model, test_loader):
             
             test_res_recon_error += recon_error.item()
 
+        ZY_inter = model.interpolate(Z, Y)
+
         example_images = [wandb.Image(img) for img in X]
         example_reconstructions = [wandb.Image(recon_img) for recon_img in X_recon]
+        example_Z = [wandb.Image(recon_img) for recon_img in Z]
+        example_Y = [wandb.Image(recon_img) for recon_img in Y]
+        example_interpolations = [wandb.Image(inter_img) for inter_img in ZY_inter]
 
     wandb.log({
         "Test Inputs": example_images,
         "Test Reconstruction": example_reconstructions,
+        "Test Interpolations": example_interpolations,
+        "Test Z": example_Z,
+        "Test Y": example_Y,
         "Test Reconstruction Error": test_res_recon_error / len(test_loader.dataset)
         })
 
