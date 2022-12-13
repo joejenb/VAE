@@ -17,7 +17,7 @@ from torchvision import transforms
 import wandb
 
 from VAE import VAE
-from configs.ffhq_64_config import config
+from configs.mnist_28_config import config
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--data", type=str)
