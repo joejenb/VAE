@@ -19,4 +19,4 @@ config["embedding_dim"] = 64
 config["latent_dim"] = 128
 config["num_channels"] = 1
 config["data_set"] = "MNIST"
-config["representation_dim"] = 6
+config["representation_dim"] = 3
