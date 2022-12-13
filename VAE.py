@@ -20,12 +20,12 @@ class Encoder(nn.Module):
 
         self._conv_3 = nn.Conv2d(in_channels=num_hiddens,
                                  out_channels=num_hiddens,
-                                 kernel_size=4,
-                                 stride=2, padding=1)
+                                 kernel_size=3,
+                                 stride=1, padding=1)
 
         self._conv_4 = nn.Conv2d(in_channels=num_hiddens,
                                  out_channels=num_hiddens,
-                                 kernel_size=4,
+                                 kernel_size=3,
                                  stride=1, padding=1)
 
         self._residual_stack = ResidualStack(in_channels=num_hiddens,
