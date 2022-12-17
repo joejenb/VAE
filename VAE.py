@@ -165,6 +165,9 @@ class VAE(nn.Module):
             return xy_recon
         return x
 
+    def reconstruct(self, x):
+            return self.forward(x)
+
     def forward(self, x):
         z = self._encoder(x)
         z = F.gelu(self._pre_sample(z))
